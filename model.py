@@ -82,14 +82,14 @@ def inertial_dampening(df, cols, num=11):
 
 #--------------------------------------------------------------
 
-def cluster_fit_acidity(df):
+def clusters_bmi_diabetic(df):
     '''
     This function takes in a dataframe, and creates and fits a clustering model on it, while adding that cluster to the dataframe and renaming the column and dropping the columns created to make the cluster.
     '''
     kmeans = KMeans(n_clusters=3, random_state=seed)
     
-    kmeans.fit(df[['fixed_acidity', 'volatile_acidity']])
-    df['scaled_clusters'] = kmeans.predict(df[['fixed_acidity', 'volatile_acidity']])
+    kmeans.fit(df[['bmi', 'diabetic_Yes', 'physically_active_Yes']])
+    df['scaled_clusters'] = kmeans.predict(df[['bmi', 'diabetic_Yes', 'physically_active_Yes']])
 
     sns.relplot(data=df, x='fixed_acidity', y='volatile_acidity', hue='scaled_clusters')
     plt.show()
@@ -101,29 +101,28 @@ def cluster_fit_acidity(df):
 
 #--------------------------------------------------------------
 
-def cluster_val_test_acidity(df, model):
+def cluster_val_test(df, model, cols, name):
     '''
     This function takes in a dataframe and a clustering model to predict off of the already fit model, and creates a column in the given dataframe, as well as renaming the column and dropping the two that the cluster were created from.
     '''
-    df['scaled_clusters'] = model.predict(df[['fixed_acidity', 'volatile_acidity']])
-
-    df = df.rename(columns= {'scaled_clusters': 'acidity_areas'})
-
-    df = df.drop(columns=['fixed_acidity', 'volatile_acidity'])
+    df1 = df.copy()
     
-    return df
+    df1[name] = model.predict(df1[cols])
+    df1 = df1.drop(columns=cols)
+    
+    return df1
 
 #--------------------------------------------------------------
 
-def make_baseline(df, baseline, col):
+def make_baseline(df, name, col):
     '''
-    This function is used to create a column within the dataframe to make a baseline column, and then calculate the baseline accuracy. Needs to be optimized more, but functions as is currently. Make sure to use the word 'baseline' when calling function.
+    This function is used to create a column within the dataframe to make a baseline column, and then calculate the baseline accuracy.
     '''
     seed = 42
     
-    df[baseline] = df[col].value_counts().idxmax()    
+    df[name] = df[col].value_counts().idxmax()    
 
-    base = (df[col] == df[baseline]).mean()
+    base = (df[col] == df[name]).mean()
     
     print(f'Baseline Accuracy is: {base:.3}')
     
@@ -138,7 +137,7 @@ def rf_gen(X_train, y_train, X_validate, y_validate):
     
     seed = 42
 
-    for i in range(1, 20):
+    for i in range(1, 16):
         
         rf = RandomForestClassifier(max_depth=i, min_samples_leaf=3, n_estimators=200, random_state=42)
         rf = rf.fit(X_train, y_train)
@@ -172,6 +171,8 @@ def rf_model(X_train_scaled, y_train, X_validate_scaled, y_validate):
     print('-----\n')
 
     print(f'Validate accuracy is: {rf.score(X_validate_scaled, y_validate):.2f}')
+    
+    return 
     
 #--------------------------------------------------------------
 
@@ -230,7 +231,7 @@ def knn_gen(X_train, y_train, X_validate, y_validate):
 
     seed = 42
     
-    for i in range(1, 21):
+    for i in range(1, 16):
         
         knn = KNeighborsClassifier(n_neighbors=i, weights='uniform')
         knn = knn.fit(X_train, y_train)
@@ -252,8 +253,64 @@ def knn_gen(X_train, y_train, X_validate, y_validate):
 
 #--------------------------------------------------------------
 
+def xg_boost1(X_train, y_train, X_validate, y_validate, X_test, y_test, max_depth, scale_pos_weight, learning_rate):
+    results = []
+    for md in max_depth:
+        for sw in scale_pos_weight:
+            for lr in learning_rate:
+                clf_xgb = xgb.XGBClassifier(objective='binary:logistic',
+                                            random_state=42,
+                                            max_depth=md,
+                                            scale_pos_weight=sw,
+                                            learning_rate=lr,
+                                            subsample=.9,
+                                            colsample_bytree=.5,
+                                            n_jobs=10)
+                clf_xgb.fit(X_train, y_train, verbose=False)
+                # Accuracy and recall for the training data
+                y_train_pred = clf_xgb.predict(X_train)
+                train_accuracy = accuracy_score(y_train, y_train_pred)
+                train_recall = recall_score(y_train, y_train_pred)
+                # Accuracy and recall for the validate data
+                y_validate_pred = clf_xgb.predict(X_validate)
+                validate_accuracy = accuracy_score(y_validate, y_validate_pred)
+                validate_recall = recall_score(y_validate, y_validate_pred)
+                # Accuracy and recall for the test data
+                y_test_pred = clf_xgb.predict(X_test)
+                test_accuracy = accuracy_score(y_test, y_test_pred)
+                test_recall = recall_score(y_test, y_test_pred)
+                # Append results to the list
+                results.append({'scale_pos_weight': sw,
+                                'learning_rate': lr,
+                                'max_depth': md,
+                                'Train Accuracy': train_accuracy,
+                                'Train Recall': train_recall,
+                                'Validate Accuracy': validate_accuracy,
+                                'Validate Recall': validate_recall,
+                                'Test Accuracy': test_accuracy,
+                                'Test Recall': test_recall})
+                # Print results
+                print(f"max_depth: {md}, scale_pos_weight: {sw}, learning_rate: {lr}, Train Recall: {train_recall:.4f}, Validate Recall: {validate_recall:.4f}, Test Recall: {test_recall:.4f}")
+    # Convert results list to DataFrame and return
+    results_df = pd.DataFrame(results)
+    return results_df
 
 #--------------------------------------------------------------
 
+def plot_feature_imp(X_train, y_train):
+    
+    seed=42
+    
+    rf = RandomForestClassifier()
+    rf_model = rf.fit(X_train, y_train)
+    rf_model.feature_importances_
+    
+    importances = pd.DataFrame(X_train.columns, columns=['features'])
+    importances['feature_importances'] = rf_model.feature_importances_
+    imp = importances.sort_values(by='feature_importances', ascending=False)
+    
+    sns.barplot(y=imp['features'], x=imp['feature_importances'])
+    
+    plt.show()
 
 #--------------------------------------------------------------

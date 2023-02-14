@@ -33,7 +33,15 @@ def get_heart_disease():
                        'SkinCancer': 'skin_cancer'
                        })
     
+    df = df.replace({'Yes': 1, 'No': 0})
+    
+    df = df[df['diabetic'] != 'No, borderline diabetes']
+    df = df[df['diabetic'] != 'Yes (during pregnancy)']
+    df['diabetic'] = df['diabetic'].astype(int)
+    df['sex']=df['sex'].replace({'Male':1,'Female':0})
+    
     return df
+
 #--------------------------------------------------------------
 
 def remove_outliers(df, k, col_list):

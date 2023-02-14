@@ -27,8 +27,8 @@ def mannwhitney_report(group1, group2):
     alpha = .05
     seed = 42
 
-    print(f'T-statistic = {t:.4f}') 
-    print(f'p-value     = {p:.4f}')
+    print(f'T-Statistic = {t:.4f}') 
+    print(f'p-value     = {p}')
 
     print('Is p-value < alpha?', p < alpha)
     
@@ -45,7 +45,7 @@ def ind_ttest_report(group1, group2):
     seed = 42
 
     print(f'T-statistic = {t:.4f}') 
-    print(f'p-value     = {p:.4f}')
+    print(f'p-value     = {p}')
 
     print('Is p-value < alpha?', p < alpha)
     
@@ -56,13 +56,13 @@ def pearsonr_report(group1, group2):
     This function takes in two groups (columns), and will perform a pearsonr test on them and print out 
     the test statistic and p-value, as well as determine if the p-value is lower than a predetermined (.05) alpha
     '''
-    t, p = stats.pearsonr(group1, group2)
+    corr, p = stats.pearsonr(group1, group2)
 
     alpha = .05
     seed = 42
 
-    print(f'T-statistic = {t:.4f}') 
-    print(f'p-value     = {p:.4f}')
+    print(f'Correlation = {corr:.4f}') 
+    print(f'p-value     = {p}')
 
     print('Is p-value < alpha?', p < alpha)
     
@@ -73,13 +73,13 @@ def spearmanr_report(group1, group2):
     This function takes in two groups (columns), and will perform a spearman r test on them and print out 
     the test statistic and p-value, as well as determine if the p-value is lower than a predetermined (.05) alpha
     '''
-    t, p = stats.spearmanr(group1, group2)
+    corr, p = stats.spearmanr(group1, group2)
 
     alpha = .05
     seed = 42
 
-    print(f'T-statistic = {t:.4f}') 
-    print(f'p-value     = {p:.4f}')
+    print(f'Correlation = {corr:.4f}') 
+    print(f'p-value     = {p}')
 
     print('Is p-value < alpha?', p < alpha)
     
@@ -104,7 +104,7 @@ def chi2_report(df, col, target):
     print('---\n')
 
     print(f'chi^2 = {chi2:.4f}') 
-    print(f'p     = {p:.4f}')
+    print(f'p     = {p}')
 
     print('Is p-value < alpha?', p < alpha)
     
@@ -120,7 +120,7 @@ def anova_report(group1, group2, group3, group4, group5):
     seed = 42
 
     print(f'f-statistic = {f:.4f}') 
-    print(f'p-value     = {p:.4f}')
+    print(f'p-value     = {p}')
 
     print('Is p-value < alpha?', p < alpha)
     
