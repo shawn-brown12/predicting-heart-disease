@@ -301,7 +301,9 @@ def xg_boost1(X_train, y_train, X_validate, y_validate, X_test, y_test, max_dept
 def plot_feature_imp(X_train, y_train):
     
     seed=42
-    
+
+    target_names = X_train.columns.str.replace('_', ' ').str.title()
+
     rf = RandomForestClassifier(random_state=seed)
     rf_model = rf.fit(X_train, y_train)
     rf_model.feature_importances_
@@ -310,7 +312,8 @@ def plot_feature_imp(X_train, y_train):
     importances['feature_importances'] = rf_model.feature_importances_
     imp = importances.sort_values(by='feature_importances', ascending=False)
     
-    sns.barplot(y=imp['features'], x=imp['feature_importances'])
+    ax = sns.barplot(y=imp['features'], x=imp['feature_importances'])
+    ax.set_yticklabels(target_names)
     plt.xlabel('Feature Importances')
     plt.ylabel('Feature Name')
     plt.show()
