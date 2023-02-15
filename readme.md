@@ -36,7 +36,7 @@ My initial hypothesis here is that the biggest drivers of heart disease will be:
 
     - How closely correlated are physically active and bmi.
     
-    - How the stroke column correlates with the target.
+    - How the stroke column correlates with heart disease.
     
     - If physical and mental health are related.
     
@@ -108,11 +108,31 @@ My initial hypothesis here is that the biggest drivers of heart disease will be:
 4. Run the final report notebook.
 
 
-## Takeaways and Conclusions
+## Conclusions
+
+
+- Clustering was not particularly helpful for the end goal of this project, at least on the features I clustered on.
+
+- BMI was by far the most significant factor in heart disease, according to this dataset.
+
+- Age group, sleep time, and health were the most important factors (in that order).
+
+- The kidney disease and drinking columns were the worst two when it comes to helping predict the target.
 
 
 ## Recommendations
 
 
+- Based on the results of all of my models, my XG Boost model was far above the rest. Therefore I would recommend this model for production use.
+
+- Additionally, I would recommend we send out some sort of communication with each patient predicted to be at risk with the model, so that they can take steps to ensure their health.
+
+
 ## Further Steps
 
+
+- There are a few things I would like to consider, going forward with this project:
+
+    - I would like to compare more of the features with each other, both to get a better idea of how each relates to the other, but to potentially build clusters that end up being helpful.
+
+    - I would also like to take more time to build more advanced functions, like with the xg boost function I have, to more quickly iterate through more models for the best time to performance efficiency.

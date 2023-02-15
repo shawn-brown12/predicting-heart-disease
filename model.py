@@ -14,7 +14,8 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix, plot_confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, plot_confusion_matrix, accuracy_score, recall_score
+import xgboost as xgb
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -290,7 +291,7 @@ def xg_boost1(X_train, y_train, X_validate, y_validate, X_test, y_test, max_dept
                                 'Test Accuracy': test_accuracy,
                                 'Test Recall': test_recall})
                 # Print results
-                print(f"max_depth: {md}, scale_pos_weight: {sw}, learning_rate: {lr}, Train Recall: {train_recall:.4f}, Validate Recall: {validate_recall:.4f}, Test Recall: {test_recall:.4f}")
+                #print(f"max_depth: {md}, scale_pos_weight: {sw}, learning_rate: {lr}, Train Recall: {train_recall:.4f}, Validate Recall: {validate_recall:.4f}, Test Recall: {test_recall:.4f}")
     # Convert results list to DataFrame and return
     results_df = pd.DataFrame(results)
     return results_df
@@ -301,7 +302,7 @@ def plot_feature_imp(X_train, y_train):
     
     seed=42
     
-    rf = RandomForestClassifier()
+    rf = RandomForestClassifier(random_state=seed)
     rf_model = rf.fit(X_train, y_train)
     rf_model.feature_importances_
     
@@ -310,7 +311,58 @@ def plot_feature_imp(X_train, y_train):
     imp = importances.sort_values(by='feature_importances', ascending=False)
     
     sns.barplot(y=imp['features'], x=imp['feature_importances'])
-    
+    plt.xlabel('Feature Importances')
+    plt.ylabel('Feature Name')
     plt.show()
+
+#--------------------------------------------------------------
+
+def model_viz(X_train, y_train, X_validate, y_validate):
+    
+    lr = LogisticRegression()
+    dt = DecisionTreeClassifier()
+    rf = RandomForestClassifier()
+    knn = KNeighborsClassifier()
+
+    model_list = [lr,dt,rf,knn]
+    models = ['Logistic Regression','Decision Tree Classifier','Random Forest Classifier','KNeighbors Classifier']
+
+    train_acc = []
+    validate_acc = []
+
+    for i in model_list:
+        i_model = i.fit(X_train,y_train)
+        y_train_pred = i_model.predict(X_train)
+        y_validate_pred = i_model.predict(X_validate)
+        train_acc.append(accuracy_score(y_train,y_train_pred))
+        validate_acc.append(accuracy_score(y_validate,y_validate_pred))
+            
+    sns.barplot(y=models,x=train_acc)
+    plt.title('Basic Models and their Accuracy on Train')
+    plt.show()
+    
+    sns.barplot(y=models, x=validate_acc)
+    plt.title('Basic Models and their Accuracy on Validate')
+    plt.show()
+    
+    return train_acc, validate_acc
+
+#--------------------------------------------------------------
+
+def best_log_reg(X_train, y_train, X_validate, y_validate):
+    
+    lr = LogisticRegression(solver='liblinear', random_state=seed)
+
+    train_acc = []
+    validate_acc = []
+
+    model = lr.fit(X_train, y_train)
+    validate_pred = lr.predict(X_validate)
+
+    print(classification_report(y_validate, validate_pred))
+
+#--------------------------------------------------------------
+
+
 
 #--------------------------------------------------------------

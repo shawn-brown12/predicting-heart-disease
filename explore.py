@@ -110,6 +110,22 @@ def chi2_report(df, col, target):
     
 #------------------------------------------------------------
 
+def chi_simple(group1, group2):
+    
+    alpha = .05
+    seed = 42
+    
+    observed = pd.crosstab(group1, group2)
+    
+    chi2, p, degf, expected = stats.chi2_contingency(observed)
+    
+    print(f'chi^2 = {chi2:.4f}')
+    print(f'p.    = {p}')
+    
+    print('Is p-value < alpha?', p < alpha)
+
+#------------------------------------------------------------
+
 def anova_report(group1, group2, group3, group4, group5):
     '''
     This function takes in multiple groups (columns), and will perform an ANOVA test on them and print out 
@@ -124,6 +140,77 @@ def anova_report(group1, group2, group3, group4, group5):
 
     print('Is p-value < alpha?', p < alpha)
     
+#------------------------------------------------------------
+
+def viz_1(train):
+    
+    sns.set_style("darkgrid", {"grid.color": ".6", "grid.linestyle": ":"})
+
+    sns.lineplot(data=train, x='heart_disease', y='bmi')
+
+    plt.title('Heart Disease and Body Mass Index')
+    plt.xlabel('Heart Disease Risk')
+    plt.ylabel('Body Mass Index')
+    
+    plt.show()
+
+#------------------------------------------------------------
+
+def viz_2(train):
+    
+    fig, ax = plt.subplots(figsize=(7,6))
+    sns.set_style("darkgrid", {"grid.color": ".6", "grid.linestyle": ":"})
+
+    bplot = sns.countplot(x='physically_active', hue='heart_disease', data=train)
+    ax.bar_label(bplot.containers[0], padding= 6)
+
+    plt.title('Physical Activity and Heart Disease Risk')
+    plt.xlabel('Physically Active?')
+    plt.ylabel('Heart Disease Risk')
+    
+    plt.show()
+
+#------------------------------------------------------------
+
+def viz_3(train):
+    
+    sns.set_style("whitegrid")
+
+    sns.lineplot(data=train, x='physical_health', y='heart_disease')
+
+    plt.title('Physical Health Levels Compared to Heart Disease Risk')
+    plt.xlabel('Physical Health')
+    plt.ylabel('Heart Disease Risk')
+    
+    plt.show()
+
+#------------------------------------------------------------
+
+def viz_4(train):
+    
+    sns.set_style("whitegrid")
+
+    sns.lineplot(x='physical_health', y='mental_health', data=train)
+    plt.title('Physical Health and Mental Health')
+    plt.xlabel('Physical Health (In the past 30 days)')
+    plt.ylabel('Mental Health (In the past 30 days)')
+    
+    plt.show()
+    
+#------------------------------------------------------------
+
+def viz_5(train):
+
+    sns.set_style("whitegrid")
+
+    sns.lineplot(x='diabetic', y='bmi', data=train)
+    
+    plt.title('Do Diabetes and Bmi have a Linear Relationship?')
+    plt.xlabel('Is the Patient Diabetic?')
+    plt.ylabel('Body Mass Index')
+    
+    plt.show()
+
 #------------------------------------------------------------
 
 

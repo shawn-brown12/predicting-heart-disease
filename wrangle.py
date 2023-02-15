@@ -7,6 +7,8 @@ from scipy import stats
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, QuantileTransformer
 
+seed = 42
+
 #--------------------------------------------------------------
 
 def get_heart_disease():
