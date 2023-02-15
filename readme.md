@@ -20,7 +20,7 @@ My main goal here, is to, using a heart disease dataset collected for the year 2
 ## Initial Questions and Hypotheses
 
 
-My initial hypothesis here is that the biggest drivers of heart disease will be:
+- My initial hypothesis here is that the biggest drivers of heart disease will be:
 
     - bmi
     
